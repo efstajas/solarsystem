@@ -35,4 +35,5 @@ export default class App extends Vue {
 <style lang="sass">
 body
   margin: 0
+  overflow: hidden
 </style>

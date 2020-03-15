@@ -3,14 +3,14 @@
     input(type="range" v-model="speedSliderValue" min="0" max="800" value="100")#slider
     #line
     #planets
-      Planet(ref="mercury" :synth="synth" tone="C4")
-      Planet(ref="venus" :synth="synth" tone="E4")
-      Planet(ref="earth" :synth="synth" tone="G4")
-      Planet(ref="mars" :synth="synth" tone="B4")
-      Planet(ref="jupiter" :synth="synth" tone="D5")
-      Planet(ref="saturn" :synth="synth" tone="G5")
-      Planet(ref="uranus" :synth="synth" tone="B5")
-      Planet(ref="neptune" :synth="synth" tone="B4")
+      Planet(ref="mercury" tone="C4")
+      Planet(ref="venus" tone="E4")
+      Planet(ref="earth" tone="G4")
+      Planet(ref="mars" tone="B4")
+      Planet(ref="jupiter" tone="D5")
+      Planet(ref="saturn" tone="G5")
+      Planet(ref="uranus" tone="B5")
+      Planet(ref="neptune" tone="B4")
     svg(height="100vh" width="100vw")
       circle(cx="50%" cy="50%" r="50" fill="white")#sun
       g
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import Planet from '@/components/Planet/Planet.vue';
 
 @Component({
@@ -34,9 +34,6 @@ import Planet from '@/components/Planet/Planet.vue';
   },
 })
 export default class SolarSystem extends Vue {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @Prop() synth!: any;
-
   speedSliderValue = '100';
 
   planets: { i: Planet; s: number; r: number }[] | null = null;
@@ -49,16 +46,13 @@ export default class SolarSystem extends Vue {
     await this.$nextTick();
 
     this.planets = [
-      { i: this.$refs.mercury as Planet, s: 3.2, r: 100 },
-      { i: this.$refs.venus as Planet, s: 1.1, r: 200 },
+      { i: this.$refs.mercury as Planet, s: 1.2, r: 100 },
+      { i: this.$refs.venus as Planet, s: 2.2, r: 200 },
       { i: this.$refs.earth as Planet, s: 2.4, r: 250 },
       { i: this.$refs.mars as Planet, s: 2.3, r: 300 },
       { i: this.$refs.jupiter as Planet, s: 1.8, r: 340 },
       { i: this.$refs.saturn as Planet, s: 1.6, r: 390 },
       { i: this.$refs.uranus as Planet, s: 1.7, r: 420 },
-      /*
-      this.$refs.uranus as Planet,
-      this.$refs.neptune as Planet, */
     ];
 
     this.setCircles();
@@ -100,9 +94,9 @@ export default class SolarSystem extends Vue {
       el.style.transform = `translate(${x}px, ${y}px)`;
 
       this.angles[index].a += planetConfig.s * (parseInt(this.speedSliderValue, 10) / 100);
-      if (angle > 360) {
+      if (angle >= 360) {
         planetConfig.i.sound();
-        this.angles[index].a = 0;
+        this.angles[index].a = angle - 360;
       }
     });
 

@@ -1,16 +1,19 @@
 <template lang="pug">
-  div#Planet
+  #wrapper
+    div#Planet()
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import outputModule from '@/store/modules/output.module';
+import outputModule from '@/store/modules/output/output.module';
 
 @Component
 export default class Planet extends Vue {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Prop() tone!: string;
+
+  @Prop() radius!: number;
 
   outputModule = getModule(outputModule, this.$store);
 
@@ -28,9 +31,9 @@ export default class Planet extends Vue {
 
 <style lang="sass" scoped>
 #Planet
-  position: absolute
   height: 32px
   width: 32px
+  position: absolute
   border-radius: 16px
-  background-color: black
+  background-color: white
 </style>

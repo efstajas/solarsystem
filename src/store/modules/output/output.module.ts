@@ -6,9 +6,9 @@ import {
 } from 'vuex-module-decorators';
 import { OutputMode } from './output.types';
 
-import TonejsDestination from './destinations/tonejs.destination';
-import MidiDestination from './destinations/midi.destination';
-import Destination from './destinations/destination.types';
+import TonejsDestination from '../destinations/tonejs.destination';
+import MidiDestination from '../destinations/midi.destination';
+import Destination from '../destinations/destination.types';
 
 @Module({
   name: 'outputs',

@@ -26,8 +26,8 @@ import { Component, Watch, Vue } from 'vue-property-decorator';
 import Window from '@/components/Window';
 
 import { getModule } from 'vuex-module-decorators';
-import outputModule from '@/store/modules/output.module';
-import { OutputMode } from '../../store/modules/output.types';
+import outputModule from '@/store/modules/output/output.module';
+import { OutputMode } from '../../store/modules/output/output.types';
 import { OptionsType } from '../../store/modules/destinations/destination.types';
 
 @Component({

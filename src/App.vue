@@ -1,8 +1,11 @@
 <template lang="pug">
   div#app
     SolarSystem()
-    #leftConfig
-      DestinationConfigurator
+    #config
+      #leftConfig
+        DestinationConfigurator
+      #rightConfig
+        PlanetConfigurator
 </template>
 
 <script lang="ts">
@@ -10,13 +13,15 @@ import { Component, Vue } from 'vue-property-decorator';
 import Planet from '@/components/Planet/Planet.vue';
 import SolarSystem from '@/components/SolarSystem.vue';
 import DestinationConfigurator from '@/components/DestinationConfigurator';
+import PlanetConfigurator from '@/components/PlanetConfigurator';
 import { getModule } from 'vuex-module-decorators';
-import outputModule from '@/store/modules/output.module';
+import outputModule from '@/store/modules/output/output.module';
 
 @Component({
   components: {
     Planet,
     SolarSystem,
+    PlanetConfigurator,
     DestinationConfigurator,
   },
 })
@@ -31,18 +36,22 @@ body
   overflow: hidden
   font-family: "Inter"
   color: white
-#leftConfig, #rightConfig
+#config
+  display: grid
   position: fixed
   top: 16px
   left: 16px
-  display: grid
-  grid-row-gap: 32px
-  height: calc(100vh - 32px)
-  overflow: scroll
-#leftConfig
-  left: 16px
-#rightConfig
   right: 16px
+  grid-template-columns: minmax(100px, 300px) auto minmax(100px, 300px)
+  grid-template-areas: "left . right"
+  height: calc(100vh - 32px)
+#leftConfig
+  grid-area: left
+#rightConfig
+  grid-area: right
+  overflow: auto
+  &::-webkit-scrollbar
+    display: none
 h1, h2, h3, p
   font-size: 16px
   margin: 0

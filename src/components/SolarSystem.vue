@@ -3,14 +3,7 @@
     input(type="range" v-model="speedSliderValue" min="0" max="800" value="100")#slider
     #line
     #planets
-      Planet(ref="mercury" tone="C4")
-      Planet(ref="venus" tone="E4")
-      Planet(ref="earth" tone="G4")
-      Planet(ref="mars" tone="B4")
-      Planet(ref="jupiter" tone="D5")
-      Planet(ref="saturn" tone="G5")
-      Planet(ref="uranus" tone="B5")
-      Planet(ref="neptune" tone="B4")
+      Planet(v-for="planet in planets" :tone="planet.tone" :ref="planet.id" :radius="planet.radius")
     svg(height="100vh" width="100vw")
       circle(cx="50%" cy="50%" r="50" fill="white")#sun
       g
@@ -25,8 +18,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import Planet from '@/components/Planet/Planet.vue';
+
+import { getModule } from 'vuex-module-decorators';
+import PlanetStore from '@/store/modules/planets/planets.module';
 
 @Component({
   components: {
@@ -36,47 +32,34 @@ import Planet from '@/components/Planet/Planet.vue';
 export default class SolarSystem extends Vue {
   speedSliderValue = '100';
 
-  planets: { i: Planet; s: number; r: number }[] | null = null;
+  planetStore = getModule(PlanetStore, this.$store);
+
+  get planets() {
+    return this.planetStore.planets;
+  }
+
+  get circles() {
+    return this.planetStore.orbitSizes;
+  }
 
   angles: { index: number; a: number }[] = [];
 
-  circles: number[] = [];
-
   async mounted() {
     await this.$nextTick();
-
-    this.planets = [
-      { i: this.$refs.mercury as Planet, s: 1.2, r: 100 },
-      { i: this.$refs.venus as Planet, s: 2.2, r: 200 },
-      { i: this.$refs.earth as Planet, s: 2.4, r: 250 },
-      { i: this.$refs.mars as Planet, s: 2.3, r: 300 },
-      { i: this.$refs.jupiter as Planet, s: 1.8, r: 340 },
-      { i: this.$refs.saturn as Planet, s: 1.6, r: 390 },
-      { i: this.$refs.uranus as Planet, s: 1.7, r: 420 },
-    ];
-
-    this.setCircles();
     this.loop();
-  }
-
-  setCircles() {
-    if (!this.planets) return;
-
-    this.planets.forEach((planetConfig) => {
-      this.circles.push(planetConfig.r);
-    });
   }
 
   loop() {
     if (!this.planets) return;
 
     this.planets.forEach((planetConfig, index) => {
-      const radius = planetConfig.r;
+      const { orbitRadius } = planetConfig;
 
-      const el = planetConfig.i.$el as HTMLDivElement;
+      const instance = (this.$refs[planetConfig.id] as Vue[])[0] as Planet;
+      const el = instance.$el as HTMLDivElement;
 
-      const cx = (window.innerWidth / 2) - el.offsetWidth / 2;
-      const cy = (window.innerHeight / 2) - el.offsetHeight / 2;
+      const cx = (window.innerWidth / 2) - planetConfig.radius / 2;
+      const cy = (window.innerHeight / 2) - planetConfig.radius / 2;
 
       if (!this.angles[index]) {
         this.angles[index] = {
@@ -87,15 +70,15 @@ export default class SolarSystem extends Vue {
 
       const angle = this.angles[index].a;
 
-      const x = cx + radius * Math.cos((angle * Math.PI) / 180);
-      const y = cy + radius * Math.sin((angle * Math.PI) / 180);
+      const x = cx + orbitRadius * Math.cos((angle * Math.PI) / 180);
+      const y = cy + orbitRadius * Math.sin((angle * Math.PI) / 180);
 
       el.style.backgroundColor = 'red';
       el.style.transform = `translate(${x}px, ${y}px)`;
 
-      this.angles[index].a += planetConfig.s * (parseInt(this.speedSliderValue, 10) / 100);
+      this.angles[index].a += planetConfig.speed * (parseInt(this.speedSliderValue, 10) / 100);
       if (angle >= 360) {
-        planetConfig.i.sound();
+        instance.sound();
         this.angles[index].a = angle - 360;
       }
     });

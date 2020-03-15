@@ -71,6 +71,8 @@ export default class TonejsDestination implements Destination {
   public playNote(note: Note): void {
     if (!this.output) return;
 
-    this.output.playNote(note);
+    this.output.playNote(note, undefined, {
+      duration: 100,
+    });
   }
 }

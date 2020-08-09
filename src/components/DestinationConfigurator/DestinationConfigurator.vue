@@ -55,7 +55,6 @@ export default class DestinationConfigurator extends Vue {
     return this.outputModule.isInitalized;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   handleInputSelect(e: Event) {
     if (
       this.outputModule.currentOutput

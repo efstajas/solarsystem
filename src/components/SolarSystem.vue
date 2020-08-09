@@ -1,6 +1,6 @@
 <template lang="pug">
   div#SolarSystem
-    input(type="range" v-model="speedSliderValue" min="0" max="800" value="100")#slider
+    SolarSlider(v-model="speedSliderValue")#slider
     #line
     #planets
       Planet(v-for="planet in planets" :tone="planet.tone" :ref="planet.id" :radius="planet.radius")
@@ -18,8 +18,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import Planet from '@/components/Planet/Planet.vue';
+import SolarSlider from '@/components/SolarSlider/SolarSlider.vue';
 
 import { getModule } from 'vuex-module-decorators';
 import PlanetStore from '@/store/modules/planets/planets.module';
@@ -27,6 +28,7 @@ import PlanetStore from '@/store/modules/planets/planets.module';
 @Component({
   components: {
     Planet,
+    SolarSlider,
   },
 })
 export default class SolarSystem extends Vue {
@@ -42,7 +44,11 @@ export default class SolarSystem extends Vue {
     return this.planetStore.orbitSizes;
   }
 
-  angles: { index: number; a: number }[] = [];
+  angles: {
+    index: number;
+    a: number;
+    millis: number;
+  }[] = [];
 
   async mounted() {
     await this.$nextTick();
@@ -65,6 +71,7 @@ export default class SolarSystem extends Vue {
         this.angles[index] = {
           index,
           a: 0,
+          millis: (new Date().getTime()),
         };
       }
 
@@ -76,7 +83,16 @@ export default class SolarSystem extends Vue {
       el.style.backgroundColor = 'red';
       el.style.transform = `translate(${x}px, ${y}px)`;
 
-      this.angles[index].a += planetConfig.speed * (parseInt(this.speedSliderValue, 10) / 100);
+      const millisSinceLastUpdate = (new Date()).getTime() - this.angles[index].millis;
+
+      console.log(this.angles[index].a, millisSinceLastUpdate);
+
+      this.angles[index].a
+        += (millisSinceLastUpdate / 4)
+        * planetConfig.speed
+        * (parseInt(this.speedSliderValue, 10) * 0.01);
+      this.angles[index].millis = (new Date()).getTime();
+
       if (angle >= 360) {
         instance.sound();
         this.angles[index].a = angle - 360;

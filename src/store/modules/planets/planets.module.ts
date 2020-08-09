@@ -70,7 +70,6 @@ export default class Planets extends VuexModule {
     if (!planet) throw new Error('That planet doesnt exist');
 
     const planets = this.currentPlanets;
-
     const updatedPlanet = Object.assign(planets[planets.indexOf(planet)], payload.update);
 
     planets[planets.indexOf(planet)] = updatedPlanet;
